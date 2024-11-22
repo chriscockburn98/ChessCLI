@@ -1,9 +1,3 @@
-// interface IPiece {
-//     x: number;
-//     y: number;
-//     team: string;
-// }
-
 abstract class Piece {
     x: number;
     y: number;
