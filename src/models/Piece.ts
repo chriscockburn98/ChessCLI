@@ -1,25 +1,28 @@
-interface Piece {
+// interface IPiece {
+//     x: number;
+//     y: number;
+//     team: string;
+// }
+
+abstract class Piece {
     x: number;
     y: number;
     team: string;
-}
 
-class Piece implements Piece {
-    constructor(x: number, y: number, team: string) {
+    constructor(team: string) {
+        this.x = -1;
+        this.y = -1;
+        this.team = team;
+    }
+
+    setPosition(x: number, y: number): void {
         this.x = x;
         this.y = y;
-        this.team = team;
     }
 
     getPostion() {
         return { x: this.x, y: this.y };
     }
-
-    setPosition(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
 }
-
 
 export default Piece;

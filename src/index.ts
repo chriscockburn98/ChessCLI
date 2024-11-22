@@ -13,44 +13,54 @@ const program = new Command();
 program
   .version('1.0.0')
   .description('Chess CLI')
-  .option('-n, --name <type>', 'Add your name')
   .action(() => {
-    const game = new Game();
+    try {
+      const game = new Game(8, 8);
 
-    // Add white pieces
-    // Pawns
-    for (let i = 0; i < 8; i++) {
-      game.addPiece(new Pawn(i, 1, 'white'));
+      // Add white pieces
+      // Pawns
+      for (let i = 0; i < 8; i++) {
+        game.board.setPiece(new Pawn('white'), i, 1);
+      }
+      // Other pieces
+      game.board.setPiece(new Rook('white'), 0, 0);
+      game.board.setPiece(new Rook('white'), 7, 0);
+      game.board.setPiece(new Knight('white'), 1, 0);
+      game.board.setPiece(new Knight('white'), 6, 0);
+      game.board.setPiece(new Bishop('white'), 2, 0);
+      game.board.setPiece(new Bishop('white'), 5, 0);
+      game.board.setPiece(new Queen('white'), 3, 0);
+      game.board.setPiece(new King('white'), 4, 0);
+
+      // Add black pieces
+      // Pawns
+      for (let i = 0; i < 8; i++) {
+        game.board.setPiece(new Pawn('black'), i, 6);
+      }
+      // Other pieces
+      game.board.setPiece(new Rook('black'), 0, 7);
+      game.board.setPiece(new Rook('black'), 7, 7);
+      game.board.setPiece(new Knight('black'), 1, 7);
+      game.board.setPiece(new Knight('black'), 6, 7);
+      game.board.setPiece(new Bishop('black'), 2, 7);
+      game.board.setPiece(new Bishop('black'), 5, 7);
+      game.board.setPiece(new Queen('black'), 3, 7);
+      game.board.setPiece(new King('black'), 4, 7);
+
+      const gameStateManager = new GameStateManager(game);
+      gameStateManager.startGame();
+
+      // Add proper exit handling
+      process.on('exit', () => {
+        console.log('Exiting game...');
+      });
+
+    } catch (error) {
+      console.error('An error occurred while running the game:');
+      console.error(error);
+      process.exit(1);
     }
-    // Other pieces
-    game.addPiece(new Rook(0, 0, 'white'));
-    game.addPiece(new Rook(7, 0, 'white'));
-    game.addPiece(new Knight(1, 0, 'white'));
-    game.addPiece(new Knight(6, 0, 'white'));
-    game.addPiece(new Bishop(2, 0, 'white'));
-    game.addPiece(new Bishop(5, 0, 'white'));
-    game.addPiece(new Queen(3, 0, 'white'));
-    game.addPiece(new King(4, 0, 'white'));
+  })
 
-    // Add black pieces
-    // Pawns
-    for (let i = 0; i < 8; i++) {
-      game.addPiece(new Pawn(i, 6, 'black'));
-    }
-    // Other pieces
-    game.addPiece(new Rook(0, 7, 'black'));
-    game.addPiece(new Rook(7, 7, 'black'));
-    game.addPiece(new Knight(1, 7, 'black'));
-    game.addPiece(new Knight(6, 7, 'black'));
-    game.addPiece(new Bishop(2, 7, 'black'));
-    game.addPiece(new Bishop(5, 7, 'black'));
-    game.addPiece(new Queen(3, 7, 'black'));
-    game.addPiece(new King(4, 7, 'black'));
-
-    const gameStateManager = new GameStateManager(game);
-
-    gameStateManager.startGame();
-
-  });
 
 program.parse(process.argv);

@@ -10,13 +10,9 @@ class Game implements Game {
     board: Board;
     currentTeam: string;
 
-    constructor() {
-        this.board = new Board();
+    constructor(boardXSize: number, boardYSize: number) {
+        this.board = new Board(boardXSize, boardYSize);
         this.currentTeam = 'white';
-    }
-
-    addPiece(piece: Piece) {
-        this.board.addPiece(piece);
     }
 
     getBoard(): Board {
@@ -28,13 +24,21 @@ class Game implements Game {
     }
 
     displayBoard(): void {
-        console.log('\n   a b c d e f g h');
-        console.log('  ─────────────────');
 
-        for (let y = 7; y >= 0; y--) {
+        const boardYSize = this.board.getBoardYSize();
+        const boardXSize = this.board.getBoardXSize();
+
+        // I want to make the logging dynamic based on the board size
+        // so if we have a 12x8 board, we want to log 12 rows and 8 columns
+        const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
+
+        console.log(`   ${columns.join(' ')}`);
+        console.log(`   ${'──'.repeat(boardXSize)}`);
+
+        for (let y = boardYSize - 1; y >= 0; y--) {
             process.stdout.write(`${y + 1} │`);
 
-            for (let x = 0; x < 8; x++) {
+            for (let x = 0; x < boardXSize; x++) {
                 const piece = this.getPiece(x, y);
                 let symbol = '·';
 
@@ -55,8 +59,8 @@ class Game implements Game {
             console.log(` │ ${y + 1}`);
         }
 
-        console.log('  ─────────────────');
-        console.log('   a b c d e f g h\n');
+        console.log(`   ${'──'.repeat(boardXSize)}`);
+        console.log(`   ${columns.join(' ')}`);
     }
 }
 
