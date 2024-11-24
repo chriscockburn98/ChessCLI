@@ -43,7 +43,16 @@ class GameStateManager {
             throw new InvalidMoveError('Invalid destination position');
         }
 
-        // You can add more validation here (e.g., check if move is legal for that piece type)
+        // Check if the target square has a piece of the same team
+        const targetPiece = this.game.board.getPiece(toX, toY);
+        if (targetPiece && targetPiece.team === piece.team) {
+            throw new InvalidMoveError('Cannot capture your own piece');
+        }
+
+        // Check piece-specific movement rules
+        if (!piece.isValidMove(this.game.board, toX, toY)) {
+            throw new InvalidMoveError('Invalid move for this piece type');
+        }
     }
 
     private promptMove(): void {
@@ -57,7 +66,7 @@ class GameStateManager {
                 this.rl.question('Enter destination position (e.g., "d4" for x=3, y=2): ', (toPos) => {
                     try {
                         const { x: toX, y: toY } = convertPositionToCoordinates(toPos);
-                        
+
                         // Validate the move
                         this.validateMove(piece, fromX, fromY, toX, toY);
 

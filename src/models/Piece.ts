@@ -1,3 +1,5 @@
+import Board from "./Board";
+
 abstract class Piece {
     x: number;
     y: number;
@@ -14,9 +16,11 @@ abstract class Piece {
         this.y = y;
     }
 
-    getPostion() {
+    getPosition() {
         return { x: this.x, y: this.y };
     }
+
+    abstract isValidMove(board: Board, toX: number, toY: number): boolean;
 }
 
 export default Piece;

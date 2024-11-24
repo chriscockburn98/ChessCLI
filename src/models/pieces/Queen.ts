@@ -1,8 +1,19 @@
+import Board from "../Board.js";
 import Piece from "../Piece.js";
 
 class Queen extends Piece {
     constructor(team: string) {
         super(team);
+    }
+
+    isValidMove(board: Board, toX: number, toY: number): boolean {
+
+        // Queen moves horizontally, vertically, or diagonallys
+        if (toX === this.x || toY === this.y || Math.abs(toX - this.x) === Math.abs(toY - this.y)) {
+            return true;
+        }
+
+        return false;
     }
 }
 
