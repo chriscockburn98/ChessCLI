@@ -7,6 +7,7 @@
     "start": "ts-node src/index.ts",
     "build": "tsc",
     "dev": "nodemon --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts",
+    "dev:moves": "nodemon --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts --show-moves",
     "test": "jest",
     "type-check": "tsc --noEmit"
   },

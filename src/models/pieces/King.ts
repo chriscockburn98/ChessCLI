@@ -3,7 +3,7 @@ import Piece from "../Piece.js";
 
 class King extends Piece {
     constructor(team: string) {
-        super(team);
+        super(team, 'king');
     }
 
     isValidMove(board: Board, toX: number, toY: number): boolean {
@@ -14,6 +14,10 @@ class King extends Piece {
         }
 
         return false;
+    }
+
+    allValidMoves(board: Board): { x: number, y: number }[] {
+        return [];
     }
 }
 

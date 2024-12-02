@@ -37,3 +37,33 @@ export function convertPositionToCoordinates(position: string): { x: number, y: 
 
     return { x, y };
 };
+
+export function convertCoordinatesToPosition(coordinates: { x: number, y: number }): string {
+    const { x, y } = coordinates;
+
+    if (x < 0 || y < 0) {
+        throw new Error('Invalid coordinates: Values cannot be negative');
+    }
+
+    // Convert x coordinate to letter(s)
+    let letters = '';
+    if (x < 26) {
+        // Single letter (a-z)
+        letters = String.fromCharCode('a'.charCodeAt(0) + x);
+    } else {
+        // Multiple letters (aa, bb, etc.)
+        const repeatCount = Math.floor(x / 26) + 1;
+        const letterCode = 'a'.charCodeAt(0) + (x % 26);
+        letters = String.fromCharCode(letterCode).repeat(repeatCount);
+    }
+
+    // Convert y coordinate to number (add 1 since positions start at 1)
+    const number = y + 1;
+
+    return `${letters}${number}`;
+}
+
+
+export function convertCoordinatesToPositionArray(coordinates: { x: number, y: number }[]): string[] {
+    return coordinates.map(coordinate => convertCoordinatesToPosition(coordinate));
+}

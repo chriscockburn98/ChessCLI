@@ -3,7 +3,7 @@ import Board from "../Board.js";
 
 class Pawn extends Piece {
     constructor(team: string) {
-        super(team);
+        super(team, 'pawn');
     }
 
     isValidMove(board: Board, toX: number, toY: number): boolean {
@@ -30,6 +30,22 @@ class Pawn extends Piece {
         // TODO: check for en passant
 
         return false;
+    }
+
+    allValidMoves(board: Board): { x: number, y: number }[] {
+        const direction = this.team === 'white' ? 1 : -1;
+
+        let moves = [];
+        const potentialMoves = [
+            { x: this.x, y: this.y + direction },
+            this.hasMoved ? null : { x: this.x, y: this.y + (2 * direction) },
+            { x: this.x + 1, y: this.y + direction },
+            { x: this.x - 1, y: this.y + direction }
+        ].filter(move => move !== null);
+
+        moves = potentialMoves.filter(move => this.isValidMove(board, move.x, move.y));
+
+        return moves;
     }
 }
 

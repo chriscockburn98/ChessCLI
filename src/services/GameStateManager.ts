@@ -1,7 +1,7 @@
 import Board from "@/models/Board.js";
 import Game from "@/models/Game.js";
 import Piece from "@/models/Piece.js";
-import { convertPositionToCoordinates } from "../utils/helpers.js";
+import { convertCoordinatesToPosition, convertCoordinatesToPositionArray, convertPositionToCoordinates } from "../utils/helpers.js";
 import * as readline from 'readline';
 import { InvalidMoveError } from '../errors/GameErrors.js';
 import MoveValidator from './MoveValidator.js';
@@ -10,14 +10,16 @@ class GameStateManager {
     private game: Game;
     private rl: readline.Interface;
     private moveValidator: MoveValidator;
+    private showPossibleMoves: boolean;
 
-    constructor(game: Game) {
+    constructor(game: Game, showPossibleMoves: boolean = false) {
         this.game = game;
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
         });
         this.moveValidator = new MoveValidator();
+        this.showPossibleMoves = showPossibleMoves;
     }
 
     getGameState(): Game {
@@ -44,6 +46,15 @@ class GameStateManager {
             try {
                 const { x: fromX, y: fromY } = convertPositionToCoordinates(fromPos);
                 const piece = this.game.board.getPiece(fromX, fromY);
+
+                if (!piece) {
+                    throw new InvalidMoveError(`No piece at position (${fromX}, ${fromY})`);
+                }
+
+                if (this.showPossibleMoves) {
+                    const positions = convertCoordinatesToPositionArray(piece.allValidMoves(this.game.board));
+                    console.log(`Possible moves for ${piece.type} at ${fromPos}: ${positions.join(', ')}`);
+                }
 
                 this.rl.question('Enter destination position (e.g., "d4" for x=3, y=2): ', (toPos) => {
                     try {

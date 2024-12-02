@@ -13,41 +13,42 @@ const program = new Command();
 program
   .version('1.0.0')
   .description('Chess CLI')
-  .action(() => {
+  .option('--show-moves', 'Show all valid moves for the selected piece')
+  .action((options) => {
     try {
       const game = new Game(8, 8);
 
       // Add white pieces
       // Pawns
       for (let i = 0; i < 8; i++) {
-        game.board.setPiece(new Pawn('white'), i, 1);
+        game.board.initialisePiece(new Pawn('white'), i, 1);
       }
       // Other pieces
-      game.board.setPiece(new Rook('white'), 0, 0);
-      game.board.setPiece(new Rook('white'), 7, 0);
-      game.board.setPiece(new Knight('white'), 1, 0);
-      game.board.setPiece(new Knight('white'), 6, 0);
-      game.board.setPiece(new Bishop('white'), 2, 0);
-      game.board.setPiece(new Bishop('white'), 5, 0);
-      game.board.setPiece(new Queen('white'), 3, 0);
-      game.board.setPiece(new King('white'), 4, 0);
+      game.board.initialisePiece(new Rook('white'), 0, 0);
+      game.board.initialisePiece(new Rook('white'), 7, 0);
+      game.board.initialisePiece(new Knight('white'), 1, 0);
+      game.board.initialisePiece(new Knight('white'), 6, 0);
+      game.board.initialisePiece(new Bishop('white'), 2, 0);
+      game.board.initialisePiece(new Bishop('white'), 5, 0);
+      game.board.initialisePiece(new Queen('white'), 3, 0);
+      game.board.initialisePiece(new King('white'), 4, 0);
 
       // Add black pieces
       // Pawns
       for (let i = 0; i < 8; i++) {
-        game.board.setPiece(new Pawn('black'), i, 6);
+        game.board.initialisePiece(new Pawn('black'), i, 6);
       }
       // Other pieces
-      game.board.setPiece(new Rook('black'), 0, 7);
-      game.board.setPiece(new Rook('black'), 7, 7);
-      game.board.setPiece(new Knight('black'), 1, 7);
-      game.board.setPiece(new Knight('black'), 6, 7);
-      game.board.setPiece(new Bishop('black'), 2, 7);
-      game.board.setPiece(new Bishop('black'), 5, 7);
-      game.board.setPiece(new Queen('black'), 3, 7);
-      game.board.setPiece(new King('black'), 4, 7);
+      game.board.initialisePiece(new Rook('black'), 0, 7);
+      game.board.initialisePiece(new Rook('black'), 7, 7);
+      game.board.initialisePiece(new Knight('black'), 1, 7);
+      game.board.initialisePiece(new Knight('black'), 6, 7);
+      game.board.initialisePiece(new Bishop('black'), 2, 7);
+      game.board.initialisePiece(new Bishop('black'), 5, 7);
+      game.board.initialisePiece(new Queen('black'), 3, 7);
+      game.board.initialisePiece(new King('black'), 4, 7);
 
-      const gameStateManager = new GameStateManager(game);
+      const gameStateManager = new GameStateManager(game, options.showMoves);
       gameStateManager.startGame();
 
       // Add proper exit handling

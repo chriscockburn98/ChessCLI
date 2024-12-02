@@ -19,7 +19,9 @@ class Board implements Board {
     }
 
     private isValidPosition(x: number, y: number): boolean {
-        return x >= 0 && x < this.boardXSize && y >= 0 && y < this.boardYSize;
+        const isValid = x >= 0 && x < this.boardXSize && y >= 0 && y < this.boardYSize;
+        if (!isValid) throw new InvalidMoveError(`Position (${x}, ${y}) is out of bounds. Board size is ${this.boardXSize}x${this.boardYSize}`);
+        return isValid;
     }
 
     getBoardXSize(): number {
@@ -35,18 +37,21 @@ class Board implements Board {
     }
 
     getPiece(x: number, y: number): Piece | null {
-        if (!this.isValidPosition(x, y)) {
-            throw new InvalidMoveError(`Position (${x}, ${y}) is out of bounds. Board size is ${this.boardXSize}x${this.boardYSize}`);
-        }
+        this.isValidPosition(x, y)
         return this.board[x][y];
     }
 
-    setPiece(piece: Piece, x: number, y: number): void {
-        if (!this.isValidPosition(x, y)) {
-            throw new InvalidMoveError(`Position (${x}, ${y}) is out of bounds. Board size is ${this.boardXSize}x${this.boardYSize}`);
-        }
+    initialisePiece(piece: Piece, x: number, y: number): void {
+        this.isValidPosition(x, y)
         piece.setPosition(x, y);
         this.board[x][y] = piece;
+    }
+
+    setPiece(piece: Piece, x: number, y: number): void {
+        this.isValidPosition(x, y)
+        piece.setPosition(x, y);
+        this.board[x][y] = piece;
+        piece.hasMoved = true;
     }
 
     isKingInCheck(team: string): boolean {
