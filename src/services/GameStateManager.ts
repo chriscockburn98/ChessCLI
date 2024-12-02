@@ -4,10 +4,12 @@ import Piece from "@/models/Piece.js";
 import { convertPositionToCoordinates } from "../utils/helpers.js";
 import * as readline from 'readline';
 import { InvalidMoveError } from '../errors/GameErrors.js';
+import MoveValidator from './MoveValidator.js';
 
 class GameStateManager {
     private game: Game;
     private rl: readline.Interface;
+    private moveValidator: MoveValidator;
 
     constructor(game: Game) {
         this.game = game;
@@ -15,6 +17,7 @@ class GameStateManager {
             input: process.stdin,
             output: process.stdout
         });
+        this.moveValidator = new MoveValidator();
     }
 
     getGameState(): Game {
@@ -31,28 +34,7 @@ class GameStateManager {
     }
 
     private validateMove(piece: Piece | null, fromX: number, fromY: number, toX: number, toY: number): void {
-        if (!piece) {
-            throw new InvalidMoveError('No piece at that position');
-        }
-
-        if (piece.team !== this.game.currentTeam) {
-            throw new InvalidMoveError('That is not your piece');
-        }
-
-        if (toX < 0 || toX >= this.game.board.boardXSize || toY < 0 || toY >= this.game.board.boardYSize) {
-            throw new InvalidMoveError('Invalid destination position');
-        }
-
-        // Check if the target square has a piece of the same team
-        const targetPiece = this.game.board.getPiece(toX, toY);
-        if (targetPiece && targetPiece.team === piece.team) {
-            throw new InvalidMoveError('Cannot capture your own piece');
-        }
-
-        // Check piece-specific movement rules
-        if (!piece.isValidMove(this.game.board, toX, toY)) {
-            throw new InvalidMoveError('Invalid move for this piece type');
-        }
+        this.moveValidator.validateMove(this.game, piece, fromX, fromY, toX, toY);
     }
 
     private promptMove(): void {
@@ -76,6 +58,13 @@ class GameStateManager {
                             this.game.board.removePiece(currentPiece)
                             currentPiece.setPosition(toX, toY);
                             this.game.board.setPiece(currentPiece, toX, toY);
+
+                            // Check for checkmate
+                            if (this.game.board.isKingInCheckmate(this.game.currentTeam)) {
+                                console.log(`Checkmate! ${this.game.currentTeam} loses.`);
+                                this.rl.close();
+                                return;
+                            }
 
                             // Switch turns
                             this.game.currentTeam = this.game.currentTeam === 'white' ? 'black' : 'white';

@@ -48,6 +48,38 @@ class Board implements Board {
         piece.setPosition(x, y);
         this.board[x][y] = piece;
     }
+
+    isKingInCheck(team: string): boolean {
+        return false;
+    }
+
+
+    isKingInCheckmate(team: string): boolean {
+        return false;
+    }
+
+    isPathClear(fromX: number, fromY: number, toX: number, toY: number): boolean {
+        // Get the direction of movement
+        const xDirection = Math.sign(toX - fromX);
+        const yDirection = Math.sign(toY - fromY);
+
+        // Start from the square after the starting position
+        let currentX = fromX + xDirection;
+        let currentY = fromY + yDirection;
+
+        // Check each square along the path until we reach the destination
+        while (currentX !== toX || currentY !== toY) {
+            // If we find a piece in the path, return false
+            if (this.getPiece(currentX, currentY) !== null) {
+                return false;
+            }
+            currentX += xDirection;
+            currentY += yDirection;
+        }
+
+        // If we've made it here, the path is clear
+        return true;
+    }
 }
 
 export default Board;
