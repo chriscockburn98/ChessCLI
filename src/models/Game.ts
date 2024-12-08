@@ -32,7 +32,7 @@ class Game implements Game {
         // so if we have a 12x8 board, we want to log 12 rows and 8 columns
         const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
 
-        console.log(`   ${columns.join(' ')}`);
+        console.log(`    ${columns.join(' ')}`);
         console.log(`   ${'──'.repeat(boardXSize)}`);
 
         for (let y = boardYSize - 1; y >= 0; y--) {
@@ -60,7 +60,7 @@ class Game implements Game {
         }
 
         console.log(`   ${'──'.repeat(boardXSize)}`);
-        console.log(`   ${columns.join(' ')}`);
+        console.log(`    ${columns.join(' ')}`);
     }
 }
 
