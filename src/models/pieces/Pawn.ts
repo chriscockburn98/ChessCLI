@@ -10,20 +10,20 @@ class Pawn extends Piece {
         const direction = this.team === 'white' ? 1 : -1;
         const startingRank = this.team === 'white' ? 1 : 6;
 
+        const targetPiece = board.getPiece(toX, toY);
         // Regular one square forward move
         if (toX === this.x && toY === this.y + direction) {
-            return board.getPiece(toX, toY) === null;
+            return targetPiece === null;
         }
 
         // Initial two square move
         if (this.y === startingRank && toX === this.x && toY === this.y + (2 * direction)) {
-            return board.getPiece(toX, toY) === null &&
+            return targetPiece === null &&
                 board.getPiece(toX, this.y + direction) === null;
         }
 
         // Diagonal capture
         if (Math.abs(toX - this.x) === 1 && toY === this.y + direction) {
-            const targetPiece = board.getPiece(toX, toY);
             return targetPiece !== null && targetPiece.team !== this.team;
         }
 
@@ -32,20 +32,16 @@ class Pawn extends Piece {
         return false;
     }
 
-    allValidMoves(board: Board): { x: number, y: number }[] {
+    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const direction = this.team === 'white' ? 1 : -1;
+        const moveSet = new Set<{ x: number, y: number }>();
 
-        let moves = [];
-        const potentialMoves = [
-            { x: this.x, y: this.y + direction },
-            this.hasMoved ? null : { x: this.x, y: this.y + (2 * direction) },
-            { x: this.x + 1, y: this.y + direction },
-            { x: this.x - 1, y: this.y + direction }
-        ].filter(move => move !== null);
+        moveSet.add({ x: this.x, y: this.y + direction });
+        moveSet.add({ x: this.x, y: this.y + (2 * direction) });
+        moveSet.add({ x: this.x + 1, y: this.y + direction });
+        // moveSet.add({ x: this.x - 1, y: this.y + direction });
 
-        moves = potentialMoves.filter(move => this.isValidMove(board, move.x, move.y));
-
-        return moves;
+        return moveSet;
     }
 }
 

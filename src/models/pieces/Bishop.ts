@@ -16,8 +16,18 @@ class Bishop extends Piece {
         return false;
     }
 
-    allValidMoves(board: Board): { x: number, y: number }[] {
-        return [];
+    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+        const moveSet = new Set<{ x: number, y: number }>();
+
+        // Check all squares on diagonals
+        for (let i = 0; i < 8; i++) {
+            if (this.x + i < 8 && this.y + i < 8) moveSet.add({ x: this.x + i, y: this.y + i });
+            if (this.x + i < 8 && this.y - i >= 0) moveSet.add({ x: this.x + i, y: this.y - i });
+            if (this.x - i >= 0 && this.y + i < 8) moveSet.add({ x: this.x - i, y: this.y + i });
+            if (this.x - i >= 0 && this.y - i >= 0) moveSet.add({ x: this.x - i, y: this.y - i });
+        }
+
+        return moveSet;
     }
 }
 

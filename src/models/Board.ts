@@ -37,7 +37,7 @@ class Board implements Board {
     }
 
     getPiece(x: number, y: number): Piece | null {
-        this.isValidPosition(x, y)
+        this.isValidPosition(x, y);
         return this.board[x][y];
     }
 

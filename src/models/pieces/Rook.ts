@@ -30,8 +30,19 @@ class Rook extends Piece {
         return true;
     }
 
-    allValidMoves(board: Board): { x: number, y: number }[] {
-        return [];
+    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+        const moveSet = new Set<{ x: number, y: number }>();
+
+        // Check all squares on the same row, column, and diagonals
+        for (let i = 0; i < 8; i++) {
+            // Horizontal moves (same row)
+            moveSet.add({ x: i, y: this.y });
+
+            // Vertical moves (same column)
+            moveSet.add({ x: this.x, y: i });
+        }
+
+        return moveSet;
     }
 }
 
