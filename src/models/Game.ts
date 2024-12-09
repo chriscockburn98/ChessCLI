@@ -45,7 +45,7 @@ class Game implements Game {
         return this.board.getPiece(x, y);
     }
 
-    displayBoard(): void {
+    displayBoard(possibleMoves: { x: number, y: number }[] = []): void {
         const boardYSize = this.board.getBoardYSize();
         const boardXSize = this.board.getBoardXSize();
         const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
@@ -60,9 +60,18 @@ class Game implements Game {
                 const piece = this.getPiece(x, y);
                 let symbol = '·';
 
+                // Check if current position is in possibleMoves
+                const isHighlighted = possibleMoves.some(move => move.x === x && move.y === y);
+
                 if (piece) {
                     const pieceType = piece.constructor.name;
-                    symbol = pieces[piece.team as Team][pieceType];
+                    if (isHighlighted) {
+                        symbol = '×'; // Show capture possibility
+                    } else {
+                        symbol = pieces[piece.team as Team][pieceType];
+                    }
+                } else if (isHighlighted) {
+                    symbol = '○'; // Show possible move
                 }
 
                 process.stdout.write(` ${symbol}`);
@@ -72,6 +81,13 @@ class Game implements Game {
 
         console.log(`   ${'──'.repeat(boardXSize)}`);
         console.log(`    ${columns.join(' ')}`);
+        
+        // Add legend
+        if (possibleMoves.length > 0) {
+            console.log('\nLegend:');
+            console.log('○ - Possible move');
+            console.log('× - Possible capture');
+        }
     }
 }
 

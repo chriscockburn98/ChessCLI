@@ -51,8 +51,12 @@ class GameStateManager {
                     throw new InvalidMoveError(`No piece at position (${fromX}, ${fromY})`);
                 }
 
+                // Get and display possible moves
+                const possibleMoves = piece.allValidMoves(this.game.board);
+                this.game.displayBoard(possibleMoves);
+
                 if (this.showPossibleMoves) {
-                    const positions = convertCoordinatesToPositionArray(piece.allValidMoves(this.game.board));
+                    const positions = convertCoordinatesToPositionArray(possibleMoves);
                     console.log(`Possible moves for ${piece.type} at ${fromPos}: ${positions.join(', ')}`);
                 }
 
@@ -98,6 +102,7 @@ class GameStateManager {
                 if (error instanceof InvalidMoveError) {
                     console.log(error.message + '. Try again.');
                 } else {
+                    console.log({ error });
                     console.log('An unexpected error occurred. Try again.');
                 }
                 this.promptMove();
