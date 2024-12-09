@@ -1,10 +1,32 @@
 import Board from "./Board.js";
 import Piece from "./Piece.js";
 
+type Team = 'white' | 'black';
+
 interface Game {
     board: Board;
     currentTeam: string;
 }
+
+// Unicode chess pieces
+const pieces: Record<Team, Record<string, string>> = {
+    white: {
+        'Pawn': '♟',
+        'Rook': '♜',
+        'Knight': '♞',
+        'Bishop': '♝',
+        'Queen': '♛',
+        'King': '♚'
+    },
+    black: {
+        'Pawn': '♙',
+        'Rook': '♖',
+        'Knight': '♘',
+        'Bishop': '♗',
+        'Queen': '♕',
+        'King': '♔'
+    }
+};
 
 class Game implements Game {
     board: Board;
@@ -24,12 +46,8 @@ class Game implements Game {
     }
 
     displayBoard(): void {
-
         const boardYSize = this.board.getBoardYSize();
         const boardXSize = this.board.getBoardXSize();
-
-        // I want to make the logging dynamic based on the board size
-        // so if we have a 12x8 board, we want to log 12 rows and 8 columns
         const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
 
         console.log(`    ${columns.join(' ')}`);
@@ -43,15 +61,8 @@ class Game implements Game {
                 let symbol = '·';
 
                 if (piece) {
-                    // Get piece symbol based on class name
-                    switch (piece.constructor.name) {
-                        case 'Pawn': symbol = 'P'; break;
-                        case 'Rook': symbol = 'R'; break;
-                        case 'Knight': symbol = 'N'; break;
-                        case 'Bishop': symbol = 'B'; break;
-                        case 'Queen': symbol = 'Q'; break;
-                        case 'King': symbol = 'K'; break;
-                    }
+                    const pieceType = piece.constructor.name;
+                    symbol = pieces[piece.team as Team][pieceType];
                 }
 
                 process.stdout.write(` ${symbol}`);
