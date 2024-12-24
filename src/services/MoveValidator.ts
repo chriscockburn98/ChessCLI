@@ -5,11 +5,6 @@ import Knight from '../models/pieces/Knight.js';
 
 class MoveValidator {
     validateMove(game: Game, piece: Piece | null, fromX: number, fromY: number, toX: number, toY: number): void {
-        // Check if the king is in check
-        if (game.board.isKingInCheck(game.currentTeam)) {
-            throw new InvalidMoveError('Your king is in check');
-        }
-
         if (!piece) {
             throw new InvalidMoveError('No piece at that position');
         }
@@ -39,6 +34,24 @@ class MoveValidator {
         // Check piece-specific movement rules
         if (!piece.isValidMove(game.board, toX, toY)) {
             throw new InvalidMoveError('Invalid move for this piece type');
+        }
+
+        // Check if the king is in check
+        const king = game.board.getPieceByType(game.currentTeam, 'king');
+        if (king) {
+            const isCurrentlyInCheck = game.board.isKingInCheck(king);
+
+            if (isCurrentlyInCheck) {
+                // If we're in check, only allow moves that resolve the check
+                if (!game.board.wouldMoveResolveCheck(piece, toX, toY)) {
+                    throw new InvalidMoveError('This move does not resolve the check');
+                }
+            } else {
+                // If we're not in check, make sure the move doesn't put us in check
+                if (game.board.wouldMovePutKingInCheck(piece, toX, toY)) {
+                    throw new InvalidMoveError('Your king would be in check');
+                }
+            }
         }
     }
 }

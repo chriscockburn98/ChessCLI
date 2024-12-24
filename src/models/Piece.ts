@@ -27,12 +27,19 @@ abstract class Piece {
 
     abstract isValidMove(board: Board, toX: number, toY: number): boolean;
 
+    getPossibleMoves(board: Board): Set<{ x: number, y: number }> {
+        return this.generatePossibleMoves(board);
+    }
+
     // New abstract method for piece-specific move generation
     protected abstract generatePossibleMoves(board: Board): Set<{ x: number, y: number }>;
 
     // Move the common filtering logic here
     allValidMoves(board: Board): { x: number, y: number }[] {
         let moves = Array.from(this.generatePossibleMoves(board));
+
+        // filter out moves that are out of bounds
+        moves = moves.filter(move => board.isValidPositionBoolean(move.x, move.y));
 
         // Common filtering logic
         moves = moves.filter(move => {
