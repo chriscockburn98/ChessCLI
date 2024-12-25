@@ -1,3 +1,4 @@
+import MoveAnalyzer from "../services/MoveAnalyzer.js";
 import Board from "./Board";
 
 abstract class Piece {
@@ -6,7 +7,7 @@ abstract class Piece {
     team: string;
     hasMoved: boolean;
     type: string;
-    protected requiresPathCheck: boolean = true;  // Default to true for most pieces
+    requiresPathCheck: boolean = true;  // Default to true for most pieces
 
     constructor(team: string, type: string) {
         this.x = -1;
@@ -27,32 +28,31 @@ abstract class Piece {
 
     abstract isValidMove(board: Board, toX: number, toY: number): boolean;
 
+    protected filterFriendlyPieces(board: Board, moves: Set<{ x: number, y: number }>): Set<{ x: number, y: number }> {
+        const filteredMoves = new Set<{ x: number, y: number }>();
+
+        for (const move of moves) {
+            const targetPiece = board.getPiece(move.x, move.y);
+            if (!targetPiece || targetPiece.team !== this.team) {
+                filteredMoves.add(move);
+            }
+        }
+
+        return filteredMoves;
+    }
+
     getPossibleMoves(board: Board): Set<{ x: number, y: number }> {
-        return this.generatePossibleMoves(board);
+        const moves = this.generatePossibleMoves(board);
+        return this.filterFriendlyPieces(board, moves);
     }
 
     // New abstract method for piece-specific move generation
-    protected abstract generatePossibleMoves(board: Board): Set<{ x: number, y: number }>;
+    abstract generatePossibleMoves(board: Board): Set<{ x: number, y: number }>;
 
     // Move the common filtering logic here
     allValidMoves(board: Board): { x: number, y: number }[] {
-        let moves = Array.from(this.generatePossibleMoves(board));
-
-        // filter out moves that are out of bounds
-        moves = moves.filter(move => board.isValidPositionBoolean(move.x, move.y));
-
-        // Common filtering logic
-        moves = moves.filter(move => {
-            const piece = board.getPiece(move.x, move.y);
-            return (
-                (move.x !== this.x || move.y !== this.y) &&
-                this.isValidMove(board, move.x, move.y) &&
-                (!this.requiresPathCheck || board.isPathClear(this.x, this.y, move.x, move.y)) &&
-                (piece === null || piece.team !== this.team)
-            );
-        });
-
-        return moves;
+        const analyzer = new MoveAnalyzer(board);
+        return analyzer.getLegalMoves(this);
     }
 }
 

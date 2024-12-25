@@ -15,13 +15,22 @@ class King extends Piece {
         return false;
     }
 
-    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+    generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const moveSet = new Set<{ x: number, y: number }>();
 
         // Check all adjacent squares (8 possible moves)
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
-                moveSet.add({ x: this.x + dx, y: this.y + dy });
+                // Skip current position
+                if (dx === 0 && dy === 0) continue;
+
+                const newX = this.x + dx;
+                const newY = this.y + dy;
+
+                // Only add moves that are within board boundaries
+                if (board.isValidPositionBoolean(newX, newY)) {
+                    moveSet.add({ x: newX, y: newY });
+                }
             }
         }
 

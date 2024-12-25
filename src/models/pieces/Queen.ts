@@ -16,22 +16,30 @@ class Queen extends Piece {
         return false;
     }
 
-    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+    generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const moveSet = new Set<{ x: number, y: number }>();
+        const directions = [
+            { dx: 1, dy: 0 }, { dx: -1, dy: 0 },  // horizontal
+            { dx: 0, dy: 1 }, { dx: 0, dy: -1 },  // vertical
+            { dx: 1, dy: 1 }, { dx: 1, dy: -1 },  // diagonal
+            { dx: -1, dy: 1 }, { dx: -1, dy: -1 }
+        ];
 
-        // Check all squares on the same row, column, and diagonals
-        for (let i = 0; i < 8; i++) {
-            // Horizontal moves (same row)
-            moveSet.add({ x: i, y: this.y });
+        for (const dir of directions) {
+            let newX = this.x + dir.dx;
+            let newY = this.y + dir.dy;
 
-            // Vertical moves (same column)
-            moveSet.add({ x: this.x, y: i });
+            while (board.isValidPositionBoolean(newX, newY)) {
+                moveSet.add({ x: newX, y: newY });
 
-            // Diagonal moves
-            if (this.x + i < 8 && this.y + i < 8) moveSet.add({ x: this.x + i, y: this.y + i });
-            if (this.x + i < 8 && this.y - i >= 0) moveSet.add({ x: this.x + i, y: this.y - i });
-            if (this.x - i >= 0 && this.y + i < 8) moveSet.add({ x: this.x - i, y: this.y + i });
-            if (this.x - i >= 0 && this.y - i >= 0) moveSet.add({ x: this.x - i, y: this.y - i });
+                // Stop if we hit any piece
+                if (board.getPiece(newX, newY) !== null) {
+                    break;
+                }
+
+                newX += dir.dx;
+                newY += dir.dy;
+            }
         }
 
         return moveSet;

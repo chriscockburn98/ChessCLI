@@ -16,15 +16,28 @@ class Bishop extends Piece {
         return false;
     }
 
-    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+    generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const moveSet = new Set<{ x: number, y: number }>();
+        const directions = [
+            { dx: 1, dy: 1 }, { dx: 1, dy: -1 },
+            { dx: -1, dy: 1 }, { dx: -1, dy: -1 }
+        ];
 
-        // Check all squares on diagonals
-        for (let i = 0; i < 8; i++) {
-            if (this.x + i < 8 && this.y + i < 8) moveSet.add({ x: this.x + i, y: this.y + i });
-            if (this.x + i < 8 && this.y - i >= 0) moveSet.add({ x: this.x + i, y: this.y - i });
-            if (this.x - i >= 0 && this.y + i < 8) moveSet.add({ x: this.x - i, y: this.y + i });
-            if (this.x - i >= 0 && this.y - i >= 0) moveSet.add({ x: this.x - i, y: this.y - i });
+        for (const dir of directions) {
+            let newX = this.x + dir.dx;
+            let newY = this.y + dir.dy;
+
+            while (board.isValidPositionBoolean(newX, newY)) {
+                moveSet.add({ x: newX, y: newY });
+
+                // Stop if we hit any piece
+                if (board.getPiece(newX, newY) !== null) {
+                    break;
+                }
+
+                newX += dir.dx;
+                newY += dir.dy;
+            }
         }
 
         return moveSet;

@@ -32,14 +32,35 @@ class Pawn extends Piece {
         return false;
     }
 
-    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+    generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const direction = this.team === 'white' ? 1 : -1;
+        const startingRank = this.team === 'white' ? 1 : 6;
         const moveSet = new Set<{ x: number, y: number }>();
 
-        moveSet.add({ x: this.x, y: this.y + direction });
-        moveSet.add({ x: this.x, y: this.y + (2 * direction) });
-        moveSet.add({ x: this.x + 1, y: this.y + direction });
-        // moveSet.add({ x: this.x - 1, y: this.y + direction });
+        // Forward one square
+        const oneForward = { x: this.x, y: this.y + direction };
+        if (board.isValidPositionBoolean(oneForward.x, oneForward.y)) {
+            moveSet.add(oneForward);
+        }
+
+        // Initial two square move
+        if (this.y === startingRank) {
+            const twoForward = { x: this.x, y: this.y + (2 * direction) };
+            if (board.isValidPositionBoolean(twoForward.x, twoForward.y)) {
+                moveSet.add(twoForward);
+            }
+        }
+
+        // Diagonal captures
+        const leftCapture = { x: this.x - 1, y: this.y + direction };
+        const rightCapture = { x: this.x + 1, y: this.y + direction };
+        
+        if (board.isValidPositionBoolean(leftCapture.x, leftCapture.y)) {
+            moveSet.add(leftCapture);
+        }
+        if (board.isValidPositionBoolean(rightCapture.x, rightCapture.y)) {
+            moveSet.add(rightCapture);
+        }
 
         return moveSet;
     }

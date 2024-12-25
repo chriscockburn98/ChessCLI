@@ -24,7 +24,7 @@ class Board implements Board {
         return isValid;
     }
 
-    private copyBoard(): Board {
+    copyBoard(): Board {
         const newBoard = new Board(this.boardXSize, this.boardYSize);
 
         this.board.forEach((row, x) => {
@@ -98,9 +98,10 @@ class Board implements Board {
     // rough way: would be to check all possible moves of the opposite team and detect if the kings coordinates are within.
     // better way: would be to see what oppposite pieces are "in line of sight" of the king.
     isKingInCheck(piece: Piece): boolean {
-        const attackingPiecesMoves = this.getOpposingAttackingPiecesMoves(piece);
-        const kingsCoordinatesExistInMoves = attackingPiecesMoves.some(move =>
-            move.some(move => move.x === piece.x && move.y === piece.y)
+        const opposingPieces = this.getPiecesByOppositeTeam(piece.team);
+        const opposingPiecesMoves = opposingPieces.map(piece => piece.getPossibleMoves(this));
+        const kingsCoordinatesExistInMoves = opposingPiecesMoves.some(moves =>
+            Array.from(moves).some(move => move.x === piece.x && move.y === piece.y)
         );
         return kingsCoordinatesExistInMoves;
     }
@@ -140,7 +141,33 @@ class Board implements Board {
 
     // TODO - finish functionality
     isKingInCheckmate(team: string): boolean {
-        return false;
+        const king = this.getPieceByType(team, 'king');
+        if (!king) return false;
+
+        // Check if the king is in check
+        const isKingInCheck = this.isKingInCheck(king);
+        if (!isKingInCheck) {
+            return false;
+        }
+
+        // Get all pieces of the current team
+        const teamPieces = this.getPiecesByTeam(team);
+
+        // Check if any piece (including the king) has a valid move that resolves the check
+        for (const piece of teamPieces) {
+            // Get all possible moves for this piece
+            const possibleMoves = piece.getPossibleMoves(this);
+
+            // Check if any of these moves would resolve the check
+            for (const move of possibleMoves) {
+                if (this.wouldMoveResolveCheck(piece, move.x, move.y)) {
+                    return false; // Found a move that resolves check, so it's not checkmate
+                }
+            }
+        }
+
+        // If we get here, no moves can resolve the check - it's checkmate
+        return true;
     }
 
     isPathClear(fromX: number, fromY: number, toX: number, toY: number): boolean {

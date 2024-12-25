@@ -1,7 +1,7 @@
 import Board from "@/models/Board.js";
 import Game from "@/models/Game.js";
 import Piece from "@/models/Piece.js";
-import { convertCoordinatesToPosition, convertCoordinatesToPositionArray, convertPositionToCoordinates } from "../utils/helpers.js";
+import { convertCoordinatesToPositionArray, convertPositionToCoordinates } from "../utils/helpers.js";
 import * as readline from 'readline';
 import { InvalidMoveError } from '../errors/GameErrors.js';
 import MoveValidator from './MoveValidator.js';
@@ -74,15 +74,15 @@ class GameStateManager {
                             currentPiece.setPosition(toX, toY);
                             this.game.board.setPiece(currentPiece, toX, toY);
 
+                            // Switch turns
+                            this.game.currentTeam = this.game.currentTeam === 'white' ? 'black' : 'white';
+
                             // Check for checkmate
                             if (this.game.board.isKingInCheckmate(this.game.currentTeam)) {
                                 console.log(`Checkmate! ${this.game.currentTeam} loses.`);
                                 this.rl.close();
                                 return;
                             }
-
-                            // Switch turns
-                            this.game.currentTeam = this.game.currentTeam === 'white' ? 'black' : 'white';
 
                             // Display updated board
                             this.game.displayBoard();

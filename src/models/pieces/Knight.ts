@@ -18,7 +18,7 @@ class Knight extends Piece {
         return false;
     }
 
-    protected generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
+    generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const moveSet = new Set<{ x: number, y: number }>();
 
         // All possible L-shaped moves
