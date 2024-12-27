@@ -51,21 +51,23 @@ class Game implements Game {
         const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
 
         let display = `    ${columns.join(' ')}\n`;
-        display += `   ${'──'.repeat(boardXSize)}\n`;
+        display += `   ╔${'═'.repeat(boardXSize * 2)}╗\n`;
 
         for (let y = boardYSize - 1; y >= 0; y--) {
-            display += `${y + 1} │`;
+            display += `${y + 1}  ║`;
 
             for (let x = 0; x < boardXSize; x++) {
                 const piece = this.getPiece(x, y);
-                let symbol = '·';
-
                 const isHighlighted = possibleMoves.some(move => move.x === x && move.y === y);
+                const isDarkSquare = (x + y) % 2 === 0;
+                
+                let symbol = isDarkSquare ? '▒' : '░';
 
                 if (piece) {
                     const pieceType = piece.constructor.name;
                     if (isHighlighted) {
-                        symbol = '×';
+                        const moveSymbol = piece ? '⚔️' : '→';
+                        symbol = moveSymbol;
                     } else {
                         symbol = pieces[piece.team as Team][pieceType];
                     }
@@ -73,12 +75,16 @@ class Game implements Game {
                     symbol = '○';
                 }
 
-                display += ` ${symbol}`;
+                const bgColor = isDarkSquare ? '\x1b[48;5;237m' : '\x1b[48;5;251m';
+                const fgColor = piece?.team === 'black' ? '\x1b[30m' : '\x1b[97m';
+                const reset = '\x1b[0m';
+                
+                display += `${bgColor}${fgColor} ${symbol}${reset}`;
             }
-            display += ` │ ${y + 1}\n`;
+            display += `║  ${y + 1}\n`;
         }
 
-        display += `   ${'──'.repeat(boardXSize)}\n`;
+        display += `   ╚${'═'.repeat(boardXSize * 2)}╝\n`;
         display += `    ${columns.join(' ')}`;
 
         if (possibleMoves.length > 0) {
