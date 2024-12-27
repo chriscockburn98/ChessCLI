@@ -50,44 +50,42 @@ class Game implements Game {
         const boardXSize = this.board.getBoardXSize();
         const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
 
-        console.log(`    ${columns.join(' ')}`);
-        console.log(`   ${'──'.repeat(boardXSize)}`);
+        let display = `    ${columns.join(' ')}\n`;
+        display += `   ${'──'.repeat(boardXSize)}\n`;
 
         for (let y = boardYSize - 1; y >= 0; y--) {
-            process.stdout.write(`${y + 1} │`);
+            display += `${y + 1} │`;
 
             for (let x = 0; x < boardXSize; x++) {
                 const piece = this.getPiece(x, y);
                 let symbol = '·';
 
-                // Check if current position is in possibleMoves
                 const isHighlighted = possibleMoves.some(move => move.x === x && move.y === y);
 
                 if (piece) {
                     const pieceType = piece.constructor.name;
                     if (isHighlighted) {
-                        symbol = '×'; // Show capture possibility
+                        symbol = '×';
                     } else {
                         symbol = pieces[piece.team as Team][pieceType];
                     }
                 } else if (isHighlighted) {
-                    symbol = '○'; // Show possible move
+                    symbol = '○';
                 }
 
-                process.stdout.write(` ${symbol}`);
+                display += ` ${symbol}`;
             }
-            console.log(` │ ${y + 1}`);
+            display += ` │ ${y + 1}\n`;
         }
 
-        console.log(`   ${'──'.repeat(boardXSize)}`);
-        console.log(`    ${columns.join(' ')}`);
-        
-        // Add legend
+        display += `   ${'──'.repeat(boardXSize)}\n`;
+        display += `    ${columns.join(' ')}`;
+
         if (possibleMoves.length > 0) {
-            console.log('\nLegend:');
-            console.log('○ - Possible move');
-            console.log('× - Possible capture');
+            display += '\n\nLegend:\n○ - Possible move\n× - Possible capture';
         }
+
+        console.log(display);
     }
 }
 
