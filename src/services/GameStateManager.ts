@@ -98,13 +98,17 @@ class GameStateManager {
         // Close readline interface completely
         this.rl.close();
 
+        // Add "Back" option to the choices
+        const choices = ['← Back', ...positions];
+
         const { selectedMove } = await inquirer.prompt<{ selectedMove: string }>({
             type: 'list',
             name: 'selectedMove',
             message: `Select destination for ${piece.type}:`,
-            choices: positions,
+            choices: choices,
             loop: false,
             filter: (input: string) => {
+                if (input === '← Back') return input;
                 const index = positions.indexOf(input);
                 const move = possibleMoves[index];
                 console.clear();
@@ -118,6 +122,11 @@ class GameStateManager {
             input: process.stdin,
             output: process.stdout
         });
+
+        // If user selected "Back", throw a special error to handle it
+        if (selectedMove === '← Back') {
+            throw new InvalidMoveError('User requested to select different piece');
+        }
 
         const index = positions.indexOf(selectedMove);
         return possibleMoves[index];
