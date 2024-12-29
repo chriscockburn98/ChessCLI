@@ -1,5 +1,9 @@
 import { InvalidMoveError } from "../errors/GameErrors.js";
 import Piece from "./Piece.js";
+import Bishop from "./pieces/Bishop.js";
+import Knight from "./pieces/Knight.js";
+import Queen from "./pieces/Queen.js";
+import Rook from "./pieces/Rook.js";
 
 interface Board {
     boardXSize: number;
@@ -231,15 +235,15 @@ class Board implements Board {
         if (piece.type === 'king' && Math.abs(toX - fromX) === 2) {
             // Determine if kingside or queenside
             const isKingside = toX > fromX;
-            
+
             // Get rook's current position
             const rookFromX = isKingside ? 7 : 0;
             const rookFromY = fromY;
-            
+
             // Get rook's destination position (f1 for kingside, d1 for queenside)
             const rookToX = isKingside ? 5 : 3;
             const rookToY = toY;
-            
+
             // Move the rook
             const rook = this.getPiece(rookFromX, rookFromY);
             if (rook) {
@@ -251,6 +255,34 @@ class Board implements Board {
         // Move the piece (king)
         this.removePiece(piece);
         this.setPiece(piece, toX, toY);
+    }
+
+    promotePawn(pawn: Piece, pieceType: string): void {
+        if (pawn.type !== 'pawn') {
+            throw new InvalidMoveError('Only pawns can be promoted');
+        }
+
+        let newPiece: Piece;
+        switch (pieceType.toLowerCase()) {
+            case 'queen':
+                newPiece = new Queen(pawn.team);
+                break;
+            case 'rook':
+                newPiece = new Rook(pawn.team);
+                break;
+            case 'bishop':
+                newPiece = new Bishop(pawn.team);
+                break;
+            case 'knight':
+                newPiece = new Knight(pawn.team);
+                break;
+            default:
+                throw new InvalidMoveError('Invalid promotion piece type');
+        }
+
+        newPiece.setPosition(pawn.x, pawn.y);
+        newPiece.hasMoved = true;
+        this.board[pawn.x][pawn.y] = newPiece;
     }
 }
 

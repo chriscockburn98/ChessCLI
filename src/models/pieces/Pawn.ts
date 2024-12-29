@@ -32,6 +32,11 @@ class Pawn extends Piece {
         return false;
     }
 
+    canPromote(): boolean {
+        const promotionRank = this.team === 'white' ? 7 : 0;
+        return this.y === promotionRank;
+    }
+
     generatePossibleMoves(board: Board): Set<{ x: number, y: number }> {
         const direction = this.team === 'white' ? 1 : -1;
         const startingRank = this.team === 'white' ? 1 : 6;

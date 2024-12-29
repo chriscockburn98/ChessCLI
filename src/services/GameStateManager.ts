@@ -6,6 +6,7 @@ import * as readline from 'readline';
 import { InvalidMoveError } from '../errors/GameErrors.js';
 import MoveValidator from './MoveValidator.js';
 import inquirer from 'inquirer';
+import Pawn from '@/models/pieces/Pawn.js';
 
 class GameStateManager {
     private game: Game;
@@ -60,6 +61,12 @@ class GameStateManager {
             if (currentPiece) {
                 this.game.board.movePiece(currentPiece.x, currentPiece.y, selectedMove.x, selectedMove.y);
 
+                // Handle promotion if applicable
+                const movedPiece = this.game.board.getPiece(selectedMove.x, selectedMove.y);
+                if (movedPiece) {
+                    await this.handlePawnPromotion(movedPiece);
+                }
+
                 // Switch turns
                 this.game.currentTeam = this.game.currentTeam === 'white' ? 'black' : 'white';
 
@@ -72,10 +79,10 @@ class GameStateManager {
 
                 // Display updated board
                 this.game.displayBoard();
-            }
 
-            // Continue with next move
-            await this.promptMove();
+                // Continue with next move - Make sure this is called
+                await this.promptMove();
+            }
 
         } catch (error) {
             if (error instanceof InvalidMoveError) {
@@ -147,6 +154,38 @@ class GameStateManager {
 
     private validateMove(piece: Piece | null, fromX: number, fromY: number, toX: number, toY: number): void {
         this.moveValidator.validateMove(this.game, piece, fromX, fromY, toX, toY);
+    }
+
+    private async handlePawnPromotion(piece: Piece): Promise<void> {
+        if (piece.type === 'pawn' && (piece as Pawn).canPromote()) {
+            const { promotionPiece } = await inquirer.prompt<{ promotionPiece: string }>({
+                type: 'list',
+                name: 'promotionPiece',
+                message: 'Choose piece for pawn promotion:',
+                choices: [
+                    {
+                        name: '♛ Queen - Most powerful piece, moves in any direction',
+                        value: 'queen'
+                    },
+                    {
+                        name: '♜ Rook - Moves horizontally and vertically',
+                        value: 'rook'
+                    },
+                    {
+                        name: '♝ Bishop - Moves diagonally',
+                        value: 'bishop'
+                    },
+                    {
+                        name: '♞ Knight - Moves in L-shape, can jump over pieces',
+                        value: 'knight'
+                    }
+                ],
+                loop: false
+            });
+
+            this.game.board.promotePawn(piece, promotionPiece);
+            console.log(`\nPawn promoted to ${promotionPiece}!`);
+        }
     }
 }
 
