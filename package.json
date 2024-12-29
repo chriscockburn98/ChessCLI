@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Chess CLI Implementation",
   "main": "index.js",
+  "engines": {
+    "node": ">=20.0"
+  },
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts",
-    "dev:moves": "nodemon --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts --show-moves",
+    "dev:moves": "nodemon -I --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts --show-moves",
     "test": "jest",
     "type-check": "tsc --noEmit"
   },
@@ -18,13 +21,15 @@
   "author": "chriscockburn98",
   "license": "ISC",
   "dependencies": {
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "inquirer": "^12.3.0"
   },
   "bin": {
     "chesscli": "./dist/index.js"
   },
   "type": "module",
   "devDependencies": {
+    "@types/inquirer": "^9.0.7",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.1",
     "jest": "^29.7.0",
