@@ -131,6 +131,16 @@ describe('Chess Game End-to-End Tests', () => {
 
             expect(currentTest.board.isKingInCheckmate('white')).toBe(false);
         });
+
+        test('Stalemate - End game', () => {
+            // Setup a realistic position where king is in check but can escape
+            currentTest.board.initialisePiece(new King('white'), 7, 0);
+
+            currentTest.board.initialisePiece(new King('black'), 5, 7);
+            currentTest.board.initialisePiece(new Queen('black'), 6, 2);
+
+            expect(currentTest.board.isStalemate('white')).toBe(true);
+        });
     });
 });
 

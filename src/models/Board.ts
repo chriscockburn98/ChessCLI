@@ -170,6 +170,30 @@ class Board implements Board {
         return true;
     }
 
+    isStalemate(team: string): boolean {
+        // First, get the king and check if it's in check
+        const king = this.getPieceByType(team, 'king');
+        if (!king || this.isKingInCheck(king)) {
+            return false; // If king is in check, it's not stalemate
+        }
+
+        // Get all pieces of the team
+        const teamPieces = this.getPiecesByTeam(team);
+
+        // Check if any piece has a legal move (one that doesn't put their king in check)
+        for (const piece of teamPieces) {
+            const possibleMoves = piece.getPossibleMoves(this);
+            for (const move of possibleMoves) {
+                if (!this.wouldMovePutKingInCheck(piece, move.x, move.y)) {
+                    return false; // Found at least one legal move, not stalemate
+                }
+            }
+        }
+
+        // If we get here, no legal moves were found - it's stalemate
+        return true;
+    }
+
     isPathClear(fromX: number, fromY: number, toX: number, toY: number): boolean {
         // Get the direction of movement
         const xDirection = Math.sign(toX - fromX);
