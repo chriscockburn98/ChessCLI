@@ -222,6 +222,36 @@ class Board implements Board {
         const opposingPiecesMoves = opposingPieces.map(piece => piece.allValidMoves(this));
         return opposingPiecesMoves;
     }
+
+    movePiece(fromX: number, fromY: number, toX: number, toY: number): void {
+        const piece = this.getPiece(fromX, fromY);
+        if (!piece) return;
+
+        // Handle castling
+        if (piece.type === 'king' && Math.abs(toX - fromX) === 2) {
+            // Determine if kingside or queenside
+            const isKingside = toX > fromX;
+            
+            // Get rook's current position
+            const rookFromX = isKingside ? 7 : 0;
+            const rookFromY = fromY;
+            
+            // Get rook's destination position (f1 for kingside, d1 for queenside)
+            const rookToX = isKingside ? 5 : 3;
+            const rookToY = toY;
+            
+            // Move the rook
+            const rook = this.getPiece(rookFromX, rookFromY);
+            if (rook) {
+                this.removePiece(rook);
+                this.setPiece(rook, rookToX, rookToY);
+            }
+        }
+
+        // Move the piece (king)
+        this.removePiece(piece);
+        this.setPiece(piece, toX, toY);
+    }
 }
 
 export default Board;

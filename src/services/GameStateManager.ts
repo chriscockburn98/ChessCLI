@@ -58,9 +58,7 @@ class GameStateManager {
             // Move the piece
             const currentPiece = this.game.board.getPiece(fromX, fromY);
             if (currentPiece) {
-                this.game.board.removePiece(currentPiece);
-                currentPiece.setPosition(selectedMove.x, selectedMove.y);
-                this.game.board.setPiece(currentPiece, selectedMove.x, selectedMove.y);
+                this.game.board.movePiece(currentPiece.x, currentPiece.y, selectedMove.x, selectedMove.y);
 
                 // Switch turns
                 this.game.currentTeam = this.game.currentTeam === 'white' ? 'black' : 'white';

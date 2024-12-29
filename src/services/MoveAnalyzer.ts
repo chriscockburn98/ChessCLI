@@ -37,6 +37,26 @@ class MoveAnalyzer {
         if (king && tempBoard.isKingInCheck(king)) {
             throw new InvalidMoveError('Move would leave king in check');
         }
+
+        // Special handling for castling
+        if (piece.type === 'king' && Math.abs(toX - piece.x) === 2) {
+            // Check if king is in check
+            if (this.board.isKingInCheck(piece)) {
+                throw new InvalidMoveError('Cannot castle while in check');
+            }
+
+            // Check if king moves through check
+            const direction = Math.sign(toX - piece.x);
+            const tempBoard = this.board.copyBoard();
+            const tempKing = tempBoard.getPiece(piece.x, piece.y)!;
+            
+            // Check intermediate square
+            tempBoard.removePiece(tempKing);
+            tempBoard.setPiece(tempKing, piece.x + direction, piece.y);
+            if (tempBoard.isKingInCheck(tempKing)) {
+                throw new InvalidMoveError('Cannot castle through check');
+            }
+        }
     }
 
     getLegalMoves(piece: Piece): Array<{ x: number, y: number }> {
