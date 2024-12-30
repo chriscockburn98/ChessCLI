@@ -15,6 +15,8 @@ class Board implements Board {
     boardXSize: number;
     boardYSize: number;
     board: Array<Array<Piece | null>>;
+    lastMovedPiece: Piece | null = null;
+    lastMoveFromY: number | null = null;
 
     constructor(boardXSize: number, boardYSize: number) {
         this.boardXSize = boardXSize;
@@ -231,30 +233,41 @@ class Board implements Board {
         const piece = this.getPiece(fromX, fromY);
         if (!piece) return;
 
-        // Handle castling
-        if (piece.type === 'king' && Math.abs(toX - fromX) === 2) {
-            // Determine if kingside or queenside
-            const isKingside = toX > fromX;
-
-            // Get rook's current position
-            const rookFromX = isKingside ? 7 : 0;
-            const rookFromY = fromY;
-
-            // Get rook's destination position (f1 for kingside, d1 for queenside)
-            const rookToX = isKingside ? 5 : 3;
-            const rookToY = toY;
-
-            // Move the rook
-            const rook = this.getPiece(rookFromX, rookFromY);
-            if (rook) {
-                this.removePiece(rook);
-                this.setPiece(rook, rookToX, rookToY);
+        // Handle en passant capture
+        if (piece.type === 'pawn' && Math.abs(toX - fromX) === 1 && Math.abs(toY - fromY) === 1) {
+            const capturedPawn = this.getPiece(toX, fromY);
+            if (capturedPawn && 
+                capturedPawn.type === 'pawn' && 
+                capturedPawn === this.lastMovedPiece && 
+                this.lastMoveFromY !== null && 
+                Math.abs(this.lastMoveFromY - fromY) === 2) {
+                this.board[toX][fromY] = null; // Remove the captured pawn
             }
         }
 
-        // Move the piece (king)
-        this.removePiece(piece);
-        this.setPiece(piece, toX, toY);
+        // Update last move information
+        this.lastMovedPiece = piece;
+        this.lastMoveFromY = fromY;
+
+        // Handle castling
+        if (piece.type === 'king' && Math.abs(toX - fromX) === 2) {
+            const rookFromX = toX > fromX ? 7 : 0;
+            const rookToX = toX > fromX ? toX - 1 : toX + 1;
+            const rook = this.getPiece(rookFromX, fromY);
+            
+            if (rook && rook.type === 'rook') {
+                this.board[rookFromX][fromY] = null;
+                this.board[rookToX][fromY] = rook;
+                rook.setPosition(rookToX, fromY);
+                rook.hasMoved = true;
+            }
+        }
+
+        // Move the piece
+        this.board[fromX][fromY] = null;
+        this.board[toX][toY] = piece;
+        piece.setPosition(toX, toY);
+        piece.hasMoved = true;
     }
 
     promotePawn(pawn: Piece, pieceType: string): void {

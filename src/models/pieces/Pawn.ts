@@ -22,12 +22,24 @@ class Pawn extends Piece {
                 board.getPiece(toX, this.y + direction) === null;
         }
 
-        // Diagonal capture
+        // Regular diagonal capture
         if (Math.abs(toX - this.x) === 1 && toY === this.y + direction) {
-            return targetPiece !== null && targetPiece.team !== this.team;
-        }
+            // Check for normal capture
+            if (targetPiece !== null && targetPiece.team !== this.team) {
+                return true;
+            }
 
-        // TODO: check for en passant
+            // Check for en passant
+            const adjacentPiece = board.getPiece(toX, this.y);
+            if (adjacentPiece && 
+                adjacentPiece.type === 'pawn' && 
+                adjacentPiece.team !== this.team && 
+                adjacentPiece === board.lastMovedPiece && 
+                board.lastMoveFromY !== null &&
+                Math.abs(board.lastMoveFromY - this.y) === 2) {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -72,6 +84,31 @@ class Pawn extends Piece {
             const rightPiece = board.getPiece(rightCapture.x, rightCapture.y);
             if (rightPiece && rightPiece.team !== this.team) {
                 moveSet.add(rightCapture);
+            }
+        }
+
+        // Add en passant moves
+        if (board.isValidPositionBoolean(this.x - 1, this.y)) {
+            const leftPiece = board.getPiece(this.x - 1, this.y);
+            if (board.lastMovedPiece && board.lastMoveFromY !== null) {
+                if (leftPiece === board.lastMovedPiece && 
+                    leftPiece?.type === 'pawn' && 
+                    leftPiece.team !== this.team && 
+                    Math.abs(board.lastMoveFromY - this.y) === 2) {
+                    moveSet.add({ x: this.x - 1, y: this.y + direction });
+                }
+            }
+        }
+
+        if (board.isValidPositionBoolean(this.x + 1, this.y)) {
+            const rightPiece = board.getPiece(this.x + 1, this.y);
+            if (board.lastMovedPiece && board.lastMoveFromY !== null) {
+                if (rightPiece === board.lastMovedPiece && 
+                    rightPiece?.type === 'pawn' && 
+                    rightPiece.team !== this.team && 
+                    Math.abs(board.lastMoveFromY - this.y) === 2) {
+                    moveSet.add({ x: this.x + 1, y: this.y + direction });
+                }
             }
         }
 
