@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "npm run test && tsc",
     "dev": "nodemon --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts",
     "dev:moves": "nodemon -I --exec node --loader ts-node/esm --require tsconfig-paths/register src/index.ts --show-moves",
     "test": "jest",
@@ -21,6 +21,7 @@
   "author": "chriscockburn98",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^5.4.1",
     "commander": "^12.1.0",
     "inquirer": "^12.3.0"
   },

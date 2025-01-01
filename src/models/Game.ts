@@ -1,5 +1,6 @@
 import Board from "./Board.js";
 import Piece from "./Piece.js";
+import chalk from 'chalk';
 
 type Team = 'white' | 'black';
 
@@ -8,25 +9,28 @@ interface Game {
     currentTeam: string;
 }
 
-// Unicode chess pieces
-const pieces: Record<Team, Record<string, string>> = {
+// Define Unicode symbols for pieces
+const pieceSymbols = {
     white: {
-        'Pawn': '♟',
-        'Rook': '♜',
-        'Knight': '♞',
-        'Bishop': '♝',
-        'Queen': '♛',
-        'King': '♚'
+        King: '♔',
+        Queen: '♕',
+        Rook: '♖',
+        Bishop: '♗',
+        Knight: '♘',
+        Pawn: '♙'
     },
     black: {
-        'Pawn': '♙',
-        'Rook': '♖',
-        'Knight': '♘',
-        'Bishop': '♗',
-        'Queen': '♕',
-        'King': '♔'
+        King: '♚',
+        Queen: '♛',
+        Rook: '♜',
+        Bishop: '♝',
+        Knight: '♞',
+        Pawn: '♟'
     }
 };
+
+// Define a type for piece names
+type PieceName = 'King' | 'Queen' | 'Rook' | 'Bishop' | 'Knight' | 'Pawn';
 
 class Game implements Game {
     board: Board;
@@ -44,55 +48,72 @@ class Game implements Game {
     getPiece(x: number, y: number): Piece | null {
         return this.board.getPiece(x, y);
     }
-
     displayBoard(possibleMoves: { x: number, y: number }[] = []): void {
         const boardYSize = this.board.getBoardYSize();
         const boardXSize = this.board.getBoardXSize();
         const columns = Array.from({ length: boardXSize }, (_, i) => String.fromCharCode(97 + i));
 
-        let display = `    ${columns.join(' ')}\n`;
-        display += `   ╔${'═'.repeat(boardXSize * 2)}╗\n`;
+        // Top border with column labels
+        let display = '\n     ' + columns.join('   ') + '\n';
+        display += '   ┌' + '───┬'.repeat(boardXSize - 1) + '───┐\n';
 
         for (let y = boardYSize - 1; y >= 0; y--) {
-            display += `${y + 1}  ║`;
+            // Row number
+            display += ` ${y + 1} │`;
 
             for (let x = 0; x < boardXSize; x++) {
                 const piece = this.getPiece(x, y);
                 const isHighlighted = possibleMoves.some(move => move.x === x && move.y === y);
                 const isDarkSquare = (x + y) % 2 === 0;
-                
-                let symbol = isDarkSquare ? '▒' : '░';
 
+                // Background colors
+                const bgColor = isDarkSquare
+                    ? '#4B6584'   // Darker slate blue for dark squares
+                    : '#A1B7D4'; // Slightly darker light squares to contrast with white pieces
+
+                // Highlight colors for possible moves
+                const highlightColor = isDarkSquare
+                    ? '#26DE81'  // Bright green for dark squares
+                    : '#2ECC71'; // Slightly darker green for light squares
+
+                // Piece or empty square
+                const bg = isHighlighted ? highlightColor : bgColor;
+                let symbol = ' ';
                 if (piece) {
-                    const pieceType = piece.constructor.name;
-                    if (isHighlighted) {
-                        const moveSymbol = piece ? '⚔️' : '→';
-                        symbol = moveSymbol;
-                    } else {
-                        symbol = pieces[piece.team as Team][pieceType];
-                    }
-                } else if (isHighlighted) {
-                    symbol = '○';
+                    const pieceType = piece.constructor.name as PieceName;
+                    symbol = pieceSymbols[piece.team as 'white' | 'black'][pieceType];
+                    const pieceColor = piece.team === 'black'
+                        ? chalk.hex('#000000')
+                        : chalk.hex('#FFFFFF');
+                    display += chalk.bgHex(bg)(pieceColor(` ${symbol} `));
+                } else {
+                    display += chalk.bgHex(bg)('   ');
                 }
 
-                const bgColor = isDarkSquare ? '\x1b[48;5;237m' : '\x1b[48;5;251m';
-                const fgColor = piece?.team === 'black' ? '\x1b[30m' : '\x1b[97m';
-                const reset = '\x1b[0m';
-                
-                display += `${bgColor}${fgColor} ${symbol}${reset}`;
+                // Vertical border
+                if (x < boardXSize - 1) {
+                    display += chalk.reset('│');
+                }
             }
-            display += `║  ${y + 1}\n`;
+            display += `│ ${y + 1}\n`;
+
+            // Horizontal borders between rows
+            if (y > 0) {
+                display += '   ├' + '───┼'.repeat(boardXSize - 1) + '───┤\n';
+            }
         }
 
-        display += `   ╚${'═'.repeat(boardXSize * 2)}╝\n`;
-        display += `    ${columns.join(' ')}`;
+        // Bottom border with column labels
+        display += '   └' + '───┴'.repeat(boardXSize - 1) + '───┘\n';
+        display += '     ' + columns.join('   ') + '\n';
 
         if (possibleMoves.length > 0) {
-            display += '\n\nLegend:\n○ - Possible move\n× - Possible capture';
+            display += '\nPossible moves are highlighted in green\n';
         }
 
         console.log(display);
     }
+
 }
 
 export default Game;
