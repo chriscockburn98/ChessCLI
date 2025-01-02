@@ -1,3 +1,4 @@
+#!/usr/bin/env node --loader ts-node/esm
 import { Command } from 'commander';
 import Game from './models/Game.js';
 import Pawn from './models/pieces/Pawn.js';
@@ -13,8 +14,7 @@ const program = new Command();
 program
   .version('1.0.0')
   .description('Chess CLI')
-  .option('--show-moves', 'Show all valid moves for the selected piece')
-  .action((options) => {
+  .action(() => {
     try {
       const game = new Game(8, 8);
 
@@ -48,7 +48,7 @@ program
       game.board.initialisePiece(new Queen('black'), 3, 7);
       game.board.initialisePiece(new King('black'), 4, 7);
 
-      const gameStateManager = new GameStateManager(game, options.showMoves);
+      const gameStateManager = new GameStateManager(game);
       gameStateManager.startGame();
 
       // Add proper exit handling

@@ -21,7 +21,7 @@
   "author": "chriscockburn98",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^5.4.1",
+    "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "inquirer": "^12.3.0"
   },

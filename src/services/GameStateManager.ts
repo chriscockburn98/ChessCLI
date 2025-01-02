@@ -10,13 +10,11 @@ import Pawn from '@/models/pieces/Pawn.js';
 
 class GameStateManager {
     private game: Game;
-    private showPossibleMoves: boolean;
     private rl: readline.Interface;
     private moveValidator: MoveValidator;
 
-    constructor(game: Game, showPossibleMoves: boolean) {
+    constructor(game: Game) {
         this.game = game;
-        this.showPossibleMoves = showPossibleMoves;
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
@@ -45,10 +43,8 @@ class GameStateManager {
             const possibleMoves = piece.allValidMoves(this.game.board);
             this.game.displayBoard(possibleMoves);
 
-            if (this.showPossibleMoves) {
-                const positions = convertCoordinatesToPositionArray(possibleMoves);
-                console.log(`Possible moves for ${piece.type} at ${fromPos}: ${positions.join(', ')}`);
-            }
+            const positions = convertCoordinatesToPositionArray(possibleMoves);
+            console.log(`Possible moves for ${piece.type} at ${fromPos}: ${positions.join(', ')}`);
 
             // Get move selection using arrow keys
             const selectedMove = await this.promptDestination(piece, possibleMoves);

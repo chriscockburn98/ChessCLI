@@ -1,7 +1,5 @@
 import Game from '@/models/Game';
-import Pawn from '../models/pieces/Pawn';
-import MoveAnalyzer from '@/services/MoveAnalyzer';
-
+import Pawn from '@/models/pieces/Pawn';
 
 describe('En Passant Tests', () => {
     let currentTest: Game;

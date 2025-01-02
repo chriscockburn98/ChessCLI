@@ -2,8 +2,6 @@ import Board from "./Board.js";
 import Piece from "./Piece.js";
 import chalk from 'chalk';
 
-type Team = 'white' | 'black';
-
 interface Game {
     board: Board;
     currentTeam: string;
