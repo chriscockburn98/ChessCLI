@@ -28,7 +28,7 @@ A command-line implementation of chess written in TypeScript. Play chess directl
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a pull request.
+Contributions are welcome! Please feel free to submit a pull request. To do this, please fork the repository and create a new branch. Then, make your changes and submit a pull request.
 
 ## License
 
