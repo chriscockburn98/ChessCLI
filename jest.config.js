@@ -3,6 +3,12 @@ export default {
     preset: 'ts-jest',
     testEnvironment: 'node',
     extensionsToTreatAsEsm: ['.ts'],
+    testMatch: ['**/src/**/*.test.ts'],
+    collectCoverageFrom: [
+        'src/**/*.ts',
+        '!src/**/*.test.ts',
+        '!src/tests/**/*'
+    ],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
         // Handle both .js and non-.js imports for testing
